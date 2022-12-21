@@ -27,6 +27,7 @@ async function run() {
     const courseCollection = client.db("edulogy").collection("course");
     const enrollmentCollection = client.db("edulogy").collection("enrollment");
     const studentCollection = client.db('edulogy').collection('student');
+    const reviewsCollection = client.db('edulogy').collection('reviews');
 
     /*
     const enrollmentCollection = client.db('edulogy').collection('enrollment');
@@ -68,12 +69,21 @@ async function run() {
       res.send(enrollments);
     });
 
+    app.get('/enrollment/:id', async(req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const enrollments = await enrollmentCollection.findOne(query);
+      res.send(enrollments);
+    })
+
 
     app.post("/enrollment", async (req, res) => {
       const enrollment = req.body;
+      const query = {}
       const result = await enrollmentCollection.insertOne(enrollment);
       res.send({ success: true, result });
     });
+
 
     //app get teachers
     app.get("/teacher", async (req, res) => {
@@ -163,6 +173,21 @@ async function run() {
       const result = await courseCollection.deleteOne(query);
       res.json(result);
     });
+
+
+
+    // store review 
+    app.post('/review', async (req, res) => {
+      const review = req.body;
+      const result = await reviewsCollection.insertOne(review)
+      res.json(result)
+  })
+
+  // get all reviews
+  app.get('/reviews', async (req, res) => {
+      const result = await reviewsCollection.find({}).toArray()
+      res.json(result)
+  })
   } finally {
     // await client.close();
   }
